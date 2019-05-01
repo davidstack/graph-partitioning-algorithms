@@ -31,14 +31,17 @@ void init_buckets(int noparts,
                   partb_t partb[][noparts - 1])
 {
     /* init partition bucket indices */
-    for (int i = 0; i < noparts; i++) {
-        for (int j = 0; j < (noparts - 1); j++) {
+ int i;   
+ for (i = 0; i < noparts; i++) {
+    int j;  
+     for ( j = 0; j < (noparts - 1); j++) {
 
             partb[i][j].max_inx = partb[i][j].min_inx = -1;
             partb[i][j].nobuckets = 0;
 
             /* init partb bucket pointers */
-            for (int k = 0; k < bucketsize; k++) {
+           int k;
+            for (k = 0; k < bucketsize; k++) {
                 partb[i][j].bnode_ptr[k] = NULL;
             }
 
@@ -79,7 +82,8 @@ void compute_gains(int nocells,
                    corn_t cnets[],
                    cells_info_t cells_info[])
 {
-    for (int cell_no = 0; cell_no < nocells; cell_no++) {
+   int cell_no;
+    for (cell_no = 0; cell_no < nocells; cell_no++) {
 
         /* initialize cells_info */
         cells_info[cell_no].locked = False;
@@ -90,12 +94,13 @@ void compute_gains(int nocells,
         cells[cell_no].cno_inets = 0;       /* # of internal nets of cell_no */
 
         /* init external & internal costs of moving cell_no to each partition */
-        for (int j = 0; j < noparts; j++) {
+        int j;
+        for (j = 0; j < noparts; j++) {
             cells_info[cell_no].mgain[j] = 0;
         }
 
         /* for each cell connected to cell_no do */
-        for (int j = 0; j < cells[cell_no].cno_nets; j++) {
+        for (j = 0; j < cells[cell_no].cno_nets; j++) {
 
             /* find the neighbor cell */
             int net_no = cnets[net_ptr].corn_no;
@@ -118,10 +123,13 @@ void free_nodes(int noparts,
                 partb_t partb[][noparts - 1])
 {
     /* delete nodes connected to partb */
-    for (int i = 0; i < noparts; i++) {
-        for (int j = 0; j < (noparts - 1); j++) {
+   int i;
+   int j;
+ int k;
+    for (i = 0; i < noparts; i++) {
+        for ( j = 0; j < (noparts - 1); j++) {
 
-            for (int k = 0; k < bucketsize; k++) {
+            for (k = 0; k < bucketsize; k++) {
                 bnode_ptr_t next = partb[i][j].bnode_ptr[k];
                 partb[i][j].bnode_ptr[k] = NULL;
                 while (next != NULL) {
@@ -145,11 +153,11 @@ void number_nodes(int noparts,
                   partb_t partb[][noparts - 1])
 {
     *npartb = 0;
-
+     int i,j,k;
     /* count nodes connected to partb */
-    for (int i = 0; i < noparts; i++) {
-        for (int j = 0; j < (noparts - 1); j++) {
-            for (int k = 0; k < bucketsize; k++) {
+    for (i = 0; i < noparts; i++) {
+        for (j = 0; j < (noparts - 1); j++) {
+            for (k = 0; k < bucketsize; k++) {
                 bnode_ptr_t next = partb[i][j].bnode_ptr[k];
                 while (next != NULL) {
                     next = next->rptr;
@@ -168,7 +176,8 @@ int find_move_set(mcells_t mcells[],
     int max_gain_sum = 0;
     *max_mcells_inx = -1;
     int gain_sum = 0;
-    for (int i = 0; i < msize; i++) {
+    int i;
+    for (i = 0; i < msize; i++) {
         gain_sum += mcells[i].mgain;
         if (gain_sum > max_gain_sum) {
             *max_mcells_inx = i;
@@ -193,8 +202,8 @@ int move_cells(int wflag,
     tcutsize = fcutsize = cutsize;
 
     int cut_gain = 0;
-
-    for (int i = 0; i <= max_mcells_inx; i++) {
+    int i;
+    for (i = 0; i <= max_mcells_inx; i++) {
 
         if (wflag == True) {
             tcutsize -= mcells[i].mgain;
@@ -218,13 +227,16 @@ int move_cells(int wflag,
 }   /* find_move_set */
 
 /* finds cut size of a given partition - used for control */
+/*总的权重信息减去边在一个分区内的权重*/
 int find_cut_size(int nonets, 
                   int totsize,
                   nets_t nets[],
                   ind_t *ind)
 {
     ind->incost = 0;
-    for (int i = 0; i < nonets; i++) {
+    int i;
+ /*一条边的两个端点在一个分区*/
+    for (i = 0; i < nonets; i++) {
         if (ind->chrom[nets[i].ncells[0]] ==
             ind->chrom[nets[i].ncells[1]])
             ind->incost += nets[i].nweight;

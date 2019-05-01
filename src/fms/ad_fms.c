@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc/malloc.h>
+#include <malloc.h>
 #include "ad_defs.h"
 #include "ad_random.h"
 #include "ad_fileio.h"
@@ -14,7 +14,7 @@
 #include "ad_bucketio.h"
 #include "ad_lib.h"
 #include "ad_lib_fms.h"
-
+#define DEBUG
 /* FOR SANCHIS' VERSION OF MULTI-WAY PARTITIONING */
 /* Also mentioned as the SN algorithm */
 /* Direct multi-way partitioning.
@@ -99,12 +99,18 @@ int main(int argc, char *argv[])
     /* moved cells */
     mcells_t *mcells = (mcells_t *) calloc(nocells, sizeof(mcells_t));
     assert(mcells != NULL);
- 
+    /*totsize 边的权重之和*/
+	/*totcellsize 节点的权重之和*/
+	/*max_density 节点（cell）可以属于的边的最大数目*/
+	/*max_nweight 一个边的最大权重*/
+	/*max_cweight 一个节点（cell）的最大权重*/
     read_graph(fname, nocells, nonets, noparts, &totsize, &totcellsize,
                &max_density, &max_cweight, &max_nweight,
                cells, nets, cnets);
 
     max_gain = max_density * max_nweight; 
+
+	/*建立一个bucket 用于存放 gain*/
     bucketsize = 2 * max_gain + 1;
 
     /* alloc memory (statically if possible) */
@@ -118,13 +124,14 @@ int main(int argc, char *argv[])
                      cells, &pop[0]);
 
 #ifdef DEBUG
+	/*打印每个分区的信息*/
     printf("Initial : Part_no min_size curr_size max_size\n");
     for (int i = 0; i < noparts; i++) {
         printf("II %d %d %d %d\n", i, pop[0].parts[i].pmin_size,
                pop[0].parts[i].pcurr_size, pop[0].parts[i].pmax_size);
     }
 #endif
-
+	 /*初始化bucket*/
     init_buckets(noparts, bucketsize, partb);
     cutsize = find_cut_size(nonets, totsize, nets, &pop[0]);
 
@@ -188,7 +195,6 @@ int main(int argc, char *argv[])
         printf("pass_no = %d Final cutsize = %d Check cutsize = %d\n", no_iter,
                cutsize, find_cut_size(nonets, totsize, nets, &pop[0]));
 #endif
-
     } while ((gain_sum > 0) && (cutsize > 0) && (no_iter < NO_ITERATIONS));
 
     printf("pass_no = %d Final cutsize = %d Check cutsize = %d\n", no_iter,
@@ -196,12 +202,24 @@ int main(int argc, char *argv[])
 
     free_nodes(noparts, bucketsize, partb);
 
+//    printf("Final : part result test---wangdekui\n");
+//    for (int i = 0; i < noparts; i++) {
+//        for(int j=0;j<noparts - 1;j++)
+//        printf("FF %d %d %d %d\n", i, partb[0].parts[i].pmin_size,
+//               pop[0].parts[i].pcurr_size, pop[0].parts[i].pmax_size);
+//    }
 #ifdef DEBUG
     printf("Final : Part_no min_size curr_size max_size\n");
     for (int i = 0; i < noparts; i++) {
         printf("FF %d %d %d %d\n", i, pop[0].parts[i].pmin_size,
                pop[0].parts[i].pcurr_size, pop[0].parts[i].pmax_size);
     }
+
+    printf("Final : Partinfo--wangdekui\n");
+       int i=1;
+        for(int j=0;j<nocells;j++){
+            printf("FF %d %d\n", i, pop[0].chrom[j]);
+        }
 #endif
 
     /* free memory for all data structures */

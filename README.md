@@ -80,7 +80,7 @@ called 'share', for the shared source files as well as one directory
 for each algorithm: 'fms', 'plm', and 'pfm'.
 
 ## HOW TO BUILD
-
+export CFLAGS="-std=c99"
 Under 'src', type 'make' (or 'gmake') to build each executable under
 its own directory. The executables are all have .x extension:
 ad_fms.x, ad_plm.x, and ad_pfm.x.

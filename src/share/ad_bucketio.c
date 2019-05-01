@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc/malloc.h>
+#include <malloc.h>
 #include "ad_defs.h"
 #include "ad_bucketio.h"
 
@@ -75,7 +75,8 @@ void delete_partb_nodes_of_cell(int noparts,
                                 partb_t partb[][noparts - 1],
                                 cells_info_t cells_info[])
 {
-    for (int mapped_dest_part = 0; mapped_dest_part < (noparts - 1); mapped_dest_part++) {
+    int mapped_dest_part;
+    for (mapped_dest_part = 0; mapped_dest_part < (noparts - 1); mapped_dest_part++) {
         delete_partb_node(True, mapped_dest_part, 
                           &partb[home_part][mapped_dest_part],
                           &cells_info[mov_cell_no]);
